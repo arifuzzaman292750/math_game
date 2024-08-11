@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:math_game/const.dart';
 import 'package:math_game/utils/my_button.dart';
+import 'package:math_game/utils/result_message.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -59,43 +62,54 @@ class _HomePageState extends State<HomePage> {
   void checkResult() {
     if (numberA + numberB == int.parse(userAnswer)) {
       showDialog(
-        //barrierDismissible: false,
+        barrierDismissible: false,
         context: context,
         builder: (context) {
-          return AlertDialog(
-            backgroundColor: Colors.deepPurple,
-            content: Container(
-              height: 200,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // the result
-                  Text('Correct!', style: whiteTextStyle,),
-
-                  // button to go to next question
-                  GestureDetector(
-                    onTap: goToNextQuestion,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple[300],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Icon(Icons.arrow_forward, color: Colors.white,),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          return ResultMessage(
+            message: 'Correct!',
+            onTap: goToNextQuestion,
+            icon: Icons.arrow_forward,
           );
         },
       );
     } else {
-      print('incorrect');
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return ResultMessage(
+            message: 'Sorry try again',
+            onTap: goBackToQuestion,
+            icon: Icons.rotate_left,
+          );
+        },
+      );
     }
   }
 
-  void goToNextQuestion() {}
+  // create random numbers
+  var randomNumbers = Random();
+
+  // go to next question
+  void goToNextQuestion() {
+    // dismiss alert dialog
+    Navigator.of(context).pop();
+
+    // reset values
+    setState(() {
+      userAnswer = '';
+    });
+
+    // create a new question
+    numberA = randomNumbers.nextInt(10);
+    numberB = randomNumbers.nextInt(10);
+  }
+
+  // go back to question
+  void goBackToQuestion() {
+    // dismiss alert dialog
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
